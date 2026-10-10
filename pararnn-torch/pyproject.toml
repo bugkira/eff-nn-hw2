@@ -1,0 +1,110 @@
+[project]
+name = "pararnn-torch"
+version = "0.21.0+hw2"
+description = "Efficient NN HW-2 subset of pararnn-torch: ParaGRU and ParaLSTM only."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Daniil Sereda", email = "128284937+bugkira@users.noreply.github.com" }
+]
+keywords = [
+    "rnn",
+    "lstm",
+    "gru",
+    "slstm",
+    "xlstm",
+    "sequence-modeling",
+    "newton",
+    "parallel-scan",
+    "triton",
+    "pytorch",
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy>=2.2.6",
+    "safetensors>=0.8.0",
+    "torch>=2.11.0",
+    # Torch 2.11 cu128 ships Triton 3.6.x; pin the dialect for fused/PCR kernels.
+    "triton>=3.6.0,<3.7; sys_platform == 'linux'",
+]
+
+[project.urls]
+Homepage = "https://github.com/bugkira/eff-nn-hw2"
+Repository = "https://github.com/bugkira/eff-nn-hw2"
+Issues = "https://github.com/bugkira/eff-nn-hw2/issues"
+Documentation = "https://github.com/bugkira/eff-nn-hw2"
+
+[project.optional-dependencies]
+train = ["mlflow"]
+flashrnn = [
+    "flashrnn>=1.0.6",
+]
+lm = [
+    "datasets>=3.0",
+    "tokenizers>=0.21",
+]
+[build-system]
+requires = ["uv_build>=0.9.7,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+    "matplotlib>=3.10.9",
+    "mlflow>=3.15.2",
+    "nbconvert>=7.17.1",
+    "nbformat>=5.11.1",
+    "pytest>=8",
+    "pyyaml>=6.0.3",
+    "ruff>=0.9",
+]
+docs = [
+    "mkdocs-material>=9.5",
+]
+
+[tool.uv]
+# PyTorch cu128 index also hosts an old `requests`; datasets needs a current one from PyPI.
+index-strategy = "unsafe-best-match"
+
+[[tool.uv.index]]
+url = "https://download.pytorch.org/whl/cu128"
+
+[tool.uv.build-backend]
+module-name = "pararnn"
+
+[tool.ruff]
+src = ["src", "examples"]
+target-version = "py310"
+# Triton kernels carry wide arithmetic expressions; the default 88 would shred them.
+line-length = 100
+extend-exclude = [
+    "notebooks",
+    "**/*.ipynb",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "C4", "PT"]
+# Docs/comments: Cyrillic + typographic/math (RUF001–003).
+# E501: formatter owns wrapping; kernels keep long GEMM/scan lines.
+ignore = ["RUF001", "RUF002", "RUF003", "E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# Examples may insert repo root on sys.path before importing pararnn.
+"examples/**" = ["E402"]
+# Composite torch asserts (`x is not None and finite`) are intentional.
+"src/pararnn/cells/**" = ["PT018"]
+"src/pararnn/kernels/**" = ["PT018"]
+"src/pararnn/solvers/**" = ["PT018"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pararnn", "examples"]
+

@@ -1,0 +1,68 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+site/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# checkpoints / data
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+data/
+datasets/
+checkpoints/
+results/
+evaluation_data/
+.cache/
+
+# experiment tracking
+mlruns/
+.mlflow/
+mlflow.db
+wandb/
+outputs/
+
+# notebook execute artifacts
+notebooks/*.executed.ipynb
+
+# example smoke artifacts
+parity_curves.json
+
+# literature PDF caches / positioning dumps (lab)
+docs/sources/
+docs/papers/
+
+# local reference checkouts
+third_party/
+
+# lab notes / agent rules (maintainer machine)
+docs/internal/
+.cursor/
+
+# LLM dumps at repo root
+/review1.md
+/IDEAS.md
+/NEW_IDEAS.md
+/DONE_IDEAS.md
+
+# editor
+.idea/
+.vscode/
+*.swp
+
+# secrets
+.env
+.env.*
+
+# train configs that belong in lab if dropped here
+configs/train/babylm*.yaml
+configs/train/imu_*.yaml
